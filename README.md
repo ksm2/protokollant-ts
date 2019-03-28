@@ -24,6 +24,8 @@ const changelog = parse(oldVersion)
 
 // Do some changes ...
 changelog.getUnreleased().added('Unicorn farm auto-pet machine')
+// Or as a shortcut:
+changelog.added('Unicorn farm auto-pet machine')
 
 // Stringify the new changelog
 const newVersion = stringify(changelog)

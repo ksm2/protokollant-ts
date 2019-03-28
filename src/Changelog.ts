@@ -30,6 +30,26 @@ export class Changelog {
     return this
   }
 
+  changed(item: string): this {
+    this.getUnreleased().changed(item)
+    return this
+  }
+
+  added(item: string): this {
+    this.getUnreleased().added(item)
+    return this
+  }
+
+  fixed(item: string): this {
+    this.getUnreleased().fixed(item)
+    return this
+  }
+
+  removed(item: string): this {
+    this.getUnreleased().removed(item)
+    return this
+  }
+
   getUnreleased(): Release {
     const release = this._releases.find(release => release.getName() === UNRELEASED)
     if (!release) {
