@@ -33,3 +33,29 @@ changelog.release('14.0.5')
 // Stringify the new changelog
 const newVersion = stringify(changelog)
 ```
+
+CLI
+---
+
+You can also use _Protokollant_ as a CLI tool.
+
+To achieve the same as the code above:
+
+    protokollant added Unicorn farm auto-pet machine
+    
+Quotes are optional, but if you use special chars, you should add them.
+
+You specify the CHANGELOG.md file as follows (default is looking for `CHANGELOG.md` in the current directory):
+
+    protokollant --changelog MY_CHANGED_FILES.md added ...
+
+The following commands create new entries:
+
+* `protokollant changed ...`  adds a new unreleased change.
+* `protokollant added ...`    adds a new unreleased addition.
+* `protokollant fixed ...`    adds a new unreleased fix.
+* `protokollant removed ...`  adds a new unreleased removal.
+
+You can also release using the command line:
+
+    protokollant release 14.0.5
