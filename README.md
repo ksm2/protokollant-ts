@@ -27,6 +27,9 @@ changelog.getUnreleased().added('Unicorn farm auto-pet machine')
 // Or as a shortcut:
 changelog.added('Unicorn farm auto-pet machine')
 
+// Create a new release "14.0.5" from "unreleased" changes
+changelog.release('14.0.5')
+
 // Stringify the new changelog
 const newVersion = stringify(changelog)
 ```

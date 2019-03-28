@@ -1,3 +1,4 @@
+import { formatDate } from './formatDate'
 import { Release } from './Release'
 
 const UNRELEASED = 'Unreleased'
@@ -80,6 +81,10 @@ export class Changelog {
     return this
   }
 
+  hasUnreleased(): boolean {
+    return this._releases.some(release => release.getName() === UNRELEASED)
+  }
+
   getUnreleased(): Release {
     const release = this._releases.find(release => release.getName() === UNRELEASED)
     if (!release) {
@@ -115,5 +120,26 @@ export class Changelog {
     }
 
     return contained
+  }
+
+  /**
+   * Releases the latest unreleased changes.
+   *
+   * @param version - The version to release under.
+   */
+  release(version: string): this {
+    if (!this.hasUnreleased())
+      return this
+
+    const release = this.getUnreleased()
+    release.setName(version)
+    release.setDate(formatDate())
+
+    if (this._linkPrefix && this._releases.length >= 2) {
+      const latestReleaseName = this._releases[1].getName()
+      release.setLink(`${this._linkPrefix}${this._tagPrefix}${latestReleaseName}...${this._tagPrefix}${version}`)
+    }
+
+    return this
   }
 }

@@ -6,7 +6,7 @@
 export class Release {
   [key: string]: any
 
-  private readonly _name: string
+  private _name: string
   private _link: string | null = null
   private _date: string | null = null
   private readonly _items = new Map<string, string[]>()
@@ -17,6 +17,11 @@ export class Release {
 
   getName(): string {
     return this._name
+  }
+
+  setName(value: string): this {
+    this._name = value
+    return this
   }
 
   getLink(): string | null {
