@@ -1,6 +1,41 @@
 import { Changelog } from './Changelog'
 import { Release } from './Release'
 
+function detectConfig(changelog: Changelog, refMap: Map<string, string>) {
+  if (!refMap.size) return
+  let prefix: string | null = null
+
+  for (const [version, link] of refMap) {
+    if (!prefix) {
+      const index = link.lastIndexOf('/')
+      if (index < 0)
+        return
+
+      prefix = link.substring(0, index + 1)
+    }
+
+    if (!link.startsWith(prefix))
+      return
+
+    const postfix = link.substring(prefix.length)
+    const match = postfix.match(/^.*?\.\.\.(.*)$/)
+
+    if (match) {
+      const [, to] = match
+      if (version === 'Unreleased') {
+        changelog.setUnreleasedBranch(to)
+      } else {
+        const index = to.indexOf(version)
+        if (index >= 0) {
+          changelog.setTagPrefix(to.substring(0, index))
+        }
+      }
+    }
+  }
+
+  changelog.setLinkPrefix(prefix)
+}
+
 export function parse(changelogStr: string): Changelog {
   const lines = changelogStr.split(/\r\n|[\r\n]/g)
   const changelog = new Changelog()
@@ -58,6 +93,7 @@ export function parse(changelogStr: string): Changelog {
   }
 
   changelog.setDescription(description)
+  detectConfig(changelog, refMap)
 
   return changelog
 }

@@ -10,6 +10,9 @@ const UNRELEASED = 'Unreleased'
 export class Changelog {
   private _heading = 'Changelog'
   private _description = ''
+  private _linkPrefix: string | null = null
+  private _tagPrefix = ''
+  private _unreleasedBranch: string | null = 'master'
   private readonly _releases: Release[] = []
 
   getHeading(): string {
@@ -27,6 +30,33 @@ export class Changelog {
 
   setDescription(value: string): this {
     this._description = value
+    return this
+  }
+
+  getLinkPrefix(): string | null {
+    return this._linkPrefix
+  }
+
+  setLinkPrefix(value: string | null): this {
+    this._linkPrefix = value
+    return this
+  }
+
+  getTagPrefix(): string {
+    return this._tagPrefix
+  }
+
+  setTagPrefix(value: string): this {
+    this._tagPrefix = value
+    return this
+  }
+
+  getUnreleasedBranch(): string | null {
+    return this._unreleasedBranch
+  }
+
+  setUnreleasedBranch(value: string | null): this {
+    this._unreleasedBranch = value
     return this
   }
 
@@ -54,6 +84,11 @@ export class Changelog {
     const release = this._releases.find(release => release.getName() === UNRELEASED)
     if (!release) {
       const newRelease = new Release(UNRELEASED)
+      if (this._linkPrefix && this._unreleasedBranch && this._releases.length > 0) {
+        const latestReleaseName = this._releases[0].getName()
+        newRelease.setLink(`${this._linkPrefix}${this._tagPrefix}${latestReleaseName}...${this._unreleasedBranch}`)
+      }
+
       this._releases.unshift(newRelease)
 
       return newRelease
