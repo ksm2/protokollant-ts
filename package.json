@@ -13,7 +13,8 @@
   "scripts": {
     "prebuild": "rimraf ./lib",
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "version": "node ./bin/protokollant.js release $npm_package_version && git add CHANGELOG.md"
   },
   "devDependencies": {
     "@types/node": "^11.12.0",
