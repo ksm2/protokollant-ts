@@ -8,14 +8,12 @@ function detectConfig(changelog: Changelog, refMap: Map<string, string>) {
   for (const [version, link] of refMap) {
     if (!prefix) {
       const index = link.lastIndexOf('/')
-      if (index < 0)
-        return
+      if (index < 0) return
 
       prefix = link.substring(0, index + 1)
     }
 
-    if (!link.startsWith(prefix))
-      return
+    if (!link.startsWith(prefix)) return
 
     const postfix = link.substring(prefix.length)
     const match = postfix.match(/^.*?\.\.\.(.*)$/)
@@ -54,26 +52,24 @@ export function parse(changelogStr: string): Changelog {
   let match: RegExpMatchArray | null
   let i = 1
   for (const line of lines) {
-    if (match = line.match(/^#\s+(.*)\s*$/)) {
+    if ((match = line.match(/^#\s+(.*)\s*$/))) {
       changelog.setHeading(match[1])
-    } else if (match = line.match(/^\[([^\]]+)]:\s+(.*)$/)) {
+    } else if ((match = line.match(/^\[([^\]]+)]:\s+(.*)$/))) {
       refMap.set(match[1], match[2])
-    } else if (match = line.match(/^##\s+\[?([^\]]+?)]?(?:\s+-\s*(.*))?$/)) {
+    } else if ((match = line.match(/^##\s+\[?([^\]]+?)]?(?:\s+-\s*(.*))?$/))) {
       addRelease()
       const [, name, date = null] = match
       release = new Release(name)
       release.setDate(date)
-    } else if (match = line.match(/^###\s+(.+)$/)) {
+    } else if ((match = line.match(/^###\s+(.+)$/))) {
       category = match[1].toLowerCase()
 
-      if (!release)
-        throw new TypeError(`Missing release for category "${category}" in line ${i}`)
+      if (!release) throw new TypeError(`Missing release for category "${category}" in line ${i}`)
 
       if (typeof release[category] !== 'function')
         throw new TypeError(`Unsupported category type "${category}" in line ${i}`)
-    } else if (match = line.match(/^[-*]\s+(.*)$/)) {
-      if (!release || !category)
-        throw new TypeError(`Missing release or category in line ${i}`)
+    } else if ((match = line.match(/^[-*]\s+(.*)$/))) {
+      if (!release || !category) throw new TypeError(`Missing release or category in line ${i}`)
 
       release[category](match[1])
     } else if (!release) {

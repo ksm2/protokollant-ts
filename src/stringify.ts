@@ -26,8 +26,7 @@ export function stringify(changelog: Changelog): string {
 
     for (const [category, items] of release.getItems()) {
       output += `### ${upperCaseFirst(category)}\n`
-      for (const item of items)
-        output += `- ${item}\n`
+      for (const item of items) output += `- ${item}\n`
       output += '\n'
     }
   }

@@ -82,11 +82,11 @@ export class Changelog {
   }
 
   hasUnreleased(): boolean {
-    return this._releases.some(release => release.getName() === UNRELEASED)
+    return this._releases.some((release) => release.getName() === UNRELEASED)
   }
 
   getUnreleased(): Release {
-    const release = this._releases.find(release => release.getName() === UNRELEASED)
+    const release = this._releases.find((release) => release.getName() === UNRELEASED)
     if (!release) {
       const newRelease = new Release(UNRELEASED)
       if (this._linkPrefix && this._unreleasedBranch && this._releases.length > 0) {
@@ -128,8 +128,9 @@ export class Changelog {
    * @param version - The version to release under.
    */
   release(version: string): this {
-    if (!this.hasUnreleased())
+    if (!this.hasUnreleased()) {
       return this
+    }
 
     const release = this.getUnreleased()
     release.setName(version)
