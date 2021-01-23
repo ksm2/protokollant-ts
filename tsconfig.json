@@ -6,7 +6,10 @@
     "rootDir": "./src",
     "outDir": "./lib",
     "declaration": true,
+    "declarationMap": true,
+    "incremental": true,
     "strict": true,
+    "isolatedModules": true,
     "esModuleInterop": true
   },
   "files": [

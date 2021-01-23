@@ -2,3 +2,4 @@ src/
 .*
 *.tgz
 *.iml
+tsconfig.*

@@ -9,10 +9,13 @@
   "bin": {
     "protokollant": "./bin/protokollant.js"
   },
+  "engines": {
+    "node": ">=10"
+  },
   "license": "MIT",
   "scripts": {
     "prettier": "prettier --check src/**/*.ts",
-    "prebuild": "rimraf ./lib",
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo",
     "build": "tsc",
     "watch": "tsc --watch",
     "prepack": "yarn run build",
