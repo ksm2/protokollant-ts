@@ -81,6 +81,11 @@ export class Changelog {
     return this
   }
 
+  addItem(category: string, item: string): this {
+    this.getUnreleased().addItem(category, item)
+    return this
+  }
+
   hasUnreleased(): boolean {
     return this._releases.some((release) => release.getName() === UNRELEASED)
   }
@@ -102,8 +107,8 @@ export class Changelog {
     return release
   }
 
-  getReleases(): IterableIterator<Release> {
-    return this._releases[Symbol.iterator]()
+  getReleases(): readonly Release[] {
+    return [...this._releases]
   }
 
   addRelease(release: Release): this {

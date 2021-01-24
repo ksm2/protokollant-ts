@@ -34,3 +34,4 @@ jobs:
       - run: yarn install --frozen-lockfile --non-interactive
       - run: yarn prettier
       - run: yarn build
+      - run: yarn test --coverage

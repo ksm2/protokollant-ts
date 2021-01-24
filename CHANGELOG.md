@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Upgrade dependencies
 - Change project configuration
+- Improve test coverage
 
 ## [1.0.2] - 2019-03-28
 ### Fixed

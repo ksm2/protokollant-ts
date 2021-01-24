@@ -1,12 +1,7 @@
 function strPad(value: any, length = 2): string {
-  const str = String(value)
-  if (str.length < length) {
-    return '0'.repeat(length - str.length) + str
-  }
-
-  return str
+  return String(value).padStart(length, '0')
 }
 
-export function formatDate(date = new Date()) {
+export function formatDate(date = new Date()): string {
   return `${date.getFullYear()}-${strPad(date.getMonth() + 1)}-${strPad(date.getDate())}`
 }

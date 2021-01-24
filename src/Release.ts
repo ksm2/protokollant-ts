@@ -47,23 +47,23 @@ export class Release {
   }
 
   changed(item: string): this {
-    return this.addToCategory('changed', item)
+    return this.addItem('changed', item)
   }
 
   added(item: string): this {
-    return this.addToCategory('added', item)
+    return this.addItem('added', item)
   }
 
   fixed(item: string): this {
-    return this.addToCategory('fixed', item)
+    return this.addItem('fixed', item)
   }
 
   removed(item: string): this {
-    return this.addToCategory('removed', item)
+    return this.addItem('removed', item)
   }
 
-  private addToCategory(category: string, item: string): this {
-    let ary = this._items.get(category) || []
+  addItem(category: string, item: string): this {
+    const ary = this._items.get(category) || []
     this._items.set(category, ary)
     ary.push(item)
 

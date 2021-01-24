@@ -1,5 +1,5 @@
 export { Changelog } from './Changelog'
 export { Release } from './Release'
 
-export { parse } from './parse'
-export { stringify } from './stringify'
+export { parseChangelog } from './parseChangelog'
+export { printChangelog } from './printChangelog'

@@ -1,7 +1,7 @@
 import { Changelog } from './Changelog'
 import { Release } from './Release'
 
-function detectConfig(changelog: Changelog, refMap: Map<string, string>) {
+function detectConfig(changelog: Changelog, refMap: Map<string, string>): void {
   if (!refMap.size) return
   let prefix: string | null = null
 
@@ -34,7 +34,7 @@ function detectConfig(changelog: Changelog, refMap: Map<string, string>) {
   changelog.setLinkPrefix(prefix)
 }
 
-export function parse(changelogStr: string): Changelog {
+export function parseChangelog(changelogStr: string): Changelog {
   const lines = changelogStr.split(/\r\n|[\r\n]/g)
   const changelog = new Changelog()
   const refMap = new Map<string, string>()
@@ -88,7 +88,7 @@ export function parse(changelogStr: string): Changelog {
     }
   }
 
-  changelog.setDescription(description)
+  changelog.setDescription(description.trimEnd())
   detectConfig(changelog, refMap)
 
   return changelog
