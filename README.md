@@ -1,6 +1,8 @@
 Protokollant
 ============
 
+![Node.js CI](https://github.com/ksm2/protokollant/workflows/Node.js%20CI/badge.svg)
+
 The _Protokollant_ keeps your changelog easily maintained.
  
 Library
