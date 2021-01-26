@@ -52,8 +52,8 @@ export class Release {
     return this
   }
 
-  getItems(): Map<string, string[]> {
-    return this._items
+  getSortedItems(): Map<string, string[]> {
+    return new Map([...this._items].sort(([key1], [key2]) => key1.localeCompare(key2)))
   }
 
   changed(item: string): this {

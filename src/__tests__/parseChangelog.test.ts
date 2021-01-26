@@ -60,8 +60,8 @@ ${description}
     expect(release.getLink()).toBe('https://github.com/ksm2/protokollant/compare/v1.0.2...master')
     expect(release.getDate()).toBe('2021-01-24')
 
-    expect(release.getItems().size).toBe(1)
-    const [[category, items]] = Array.from(release.getItems())
+    expect(release.getSortedItems().size).toBe(1)
+    const [[category, items]] = Array.from(release.getSortedItems())
     expect(category).toBe('changed')
     expect(items).toHaveLength(2)
 

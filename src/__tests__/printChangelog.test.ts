@@ -17,8 +17,8 @@ describe('printChangelog', () => {
   it('prints changelog with all types', () => {
     const changelog = new Changelog()
     changelog.setDescription('Lorem Ipsum\n\n')
-    changelog.added('added')
     changelog.changed('changed')
+    changelog.added('added')
     changelog.fixed('fixed')
     changelog.removed('removed')
     changelog.addItem('x', 'x')

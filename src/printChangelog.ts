@@ -19,7 +19,7 @@ function printRelease(document: MarkdownDocument, release: Release): void {
   }
   document.h2(heading.join(' - '))
 
-  for (const [category, items] of release.getItems()) {
+  for (const [category, items] of release.getSortedItems()) {
     document.h3(upperCaseFirst(category))
     for (const item of items) {
       document.listItem(item)
