@@ -73,8 +73,9 @@ export class Release {
   }
 
   addItem(category: string, item: string): this {
-    const ary = this._items.get(category) || []
-    this._items.set(category, ary)
+    const normalizedCategory = category.trim().toLowerCase()
+    const ary = this._items.get(normalizedCategory) || []
+    this._items.set(normalizedCategory, ary)
     ary.push(item)
 
     return this
