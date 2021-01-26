@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Add descriptions to releases
+- Add extract command to get changes of a single release
 ### Changed
 - Upgrade dependencies
 - Change project configuration

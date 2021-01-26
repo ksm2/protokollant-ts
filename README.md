@@ -58,6 +58,11 @@ The following commands create new entries:
 * `protokollant fixed ...`    adds a new unreleased fix.
 * `protokollant removed ...`  adds a new unreleased removal.
 
-You can also release using the command line:
+You can also release using the **release** command:
 
     protokollant release 14.0.5
+
+Use the **extract** command to export a specific release to stdout.
+You can pipe it to a new file like this:
+
+    protokollant extract 14.0.5 > release-14.0.5.md

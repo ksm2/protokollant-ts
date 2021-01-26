@@ -4,6 +4,7 @@ import path from 'path'
 import { Changelog } from './Changelog'
 import { parseChangelog } from './parseChangelog'
 import { printChangelog } from './printChangelog'
+import { printRelease } from './printRelease'
 
 function getFilename(): string {
   if (!cmd.parsedOpts.changelog.length) {
@@ -75,6 +76,20 @@ cmd
     async (opts, args) =>
       await withChangelog(async (changelog) => {
         changelog.release(args.version)
+      })
+  )
+
+cmd
+  .subCommand<{}, { version: string }>('extract <version>')
+  .description('Extracts the specified version')
+  .action(
+    async (opts, args) =>
+      await withChangelog(async (changelog) => {
+        const release = changelog.getReleases().find((release) => release.getName() === args.version)
+        if (release === undefined) {
+          process.exit(2)
+        }
+        process.stdout.write(printRelease(release))
       })
   )
 
