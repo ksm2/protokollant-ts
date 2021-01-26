@@ -1,95 +1,193 @@
 import { Changelog } from './Changelog'
+import {
+  MarkdownContent,
+  MarkdownH1,
+  MarkdownH2,
+  MarkdownH3,
+  MarkdownItem,
+  MarkdownListItem,
+  MarkdownReference,
+  parseMarkdown,
+} from './parseMarkdown'
 import { Release } from './Release'
 
-function detectConfig(changelog: Changelog, refMap: Map<string, string>): void {
-  if (!refMap.size) return
-  let prefix: string | null = null
+function contentToString(contents: MarkdownContent[]): string {
+  return contents.reduce((acc, content) => {
+    switch (content.type) {
+      case 'newLine':
+        return acc + '\n'
+      case 'link':
+        if (content.href) {
+          return acc + `[${content.text}](${content.href})`
+        }
+        return acc + `[${content.text}]`
+      case 'text':
+        return acc + content.content
+    }
+  }, '')
+}
 
-  for (const [version, link] of refMap) {
-    if (!prefix) {
-      const index = link.lastIndexOf('/')
-      if (index < 0) return
+function itemsToString(items: MarkdownItem[]): string {
+  return items.reduce((acc, item) => {
+    switch (item.type) {
+      case 'p': {
+        return acc + contentToString(item.content)
+      }
+      case 'listItem': {
+        return acc + `- ${contentToString(item.content)}`
+      }
+      default: {
+        return acc
+      }
+    }
+  }, '')
+}
 
-      prefix = link.substring(0, index + 1)
+interface Subsection {
+  heading: MarkdownContent[]
+  article: MarkdownItem[]
+}
+
+interface Section extends Subsection {
+  subsections: Subsection[]
+}
+
+interface Document extends Subsection {
+  sections: Section[]
+}
+
+class Parser {
+  private readonly markdown: MarkdownItem[]
+  private index = 0
+
+  constructor(markdown: MarkdownItem[]) {
+    this.markdown = markdown
+  }
+
+  parseDocument(): Document | undefined {
+    const heading = this.parse<MarkdownH1>('h1')?.content
+    if (!heading) return undefined
+    const article = this.parseArticle()
+    const sections = this.parseSections()
+    return { heading, article, sections }
+  }
+
+  parseSections(): Section[] {
+    const section = this.parseSection()
+    if (section) {
+      return [section, ...this.parseSections()]
     }
 
-    if (!link.startsWith(prefix)) return
+    return []
+  }
 
-    const postfix = link.substring(prefix.length)
-    const match = postfix.match(/^.*?\.\.\.(.*)$/)
+  parseSection(): Section | undefined {
+    const heading = this.parse<MarkdownH2>('h2')?.content
+    if (!heading) return undefined
+    const article = this.parseArticle()
+    const subsections = this.parseSubsections()
+    return { heading, article, subsections }
+  }
 
-    if (match) {
-      const [, to] = match
-      if (version === 'Unreleased') {
-        changelog.setUnreleasedBranch(to)
-      } else {
-        const index = to.indexOf(version)
-        if (index >= 0) {
-          changelog.setTagPrefix(to.substring(0, index))
-        }
+  parseSubsections(): Subsection[] {
+    const subsection = this.parseSubsection()
+    if (subsection) {
+      return [subsection, ...this.parseSubsections()]
+    }
+
+    return []
+  }
+
+  parseSubsection(): Subsection | undefined {
+    const heading = this.parse<MarkdownH3>('h3')?.content
+    if (!heading) return undefined
+    const article = this.parseArticle()
+    return { heading, article }
+  }
+
+  parseArticle(): MarkdownItem[] {
+    const item = this.parse('p') ?? this.parse('listItem')
+    if (item) {
+      return [item, ...this.parseArticle()]
+    }
+
+    return []
+  }
+
+  parse<K extends MarkdownItem>(type: K['type']): K | undefined {
+    const item = this.markdown[this.index]
+    if (item?.type !== type) {
+      return undefined
+    }
+
+    this.index += 1
+    return item as K
+  }
+}
+
+function parseRelease(markdown: MarkdownItem[], section: Section): Release {
+  const releaseHeading = section.heading.reduce((acc, part) => {
+    switch (part.type) {
+      case 'text':
+        return acc + part.content
+      case 'link':
+        return acc + part.text
+      default:
+        return acc
+    }
+  }, '')
+
+  const [, releaseName, releaseDate] = releaseHeading.match(/^(.*?)(?: - (\d{4}-\d{2}-\d{2}))?$/)!
+
+  const release = new Release(releaseName)
+  release.setDescription(itemsToString(section.article).trimEnd())
+  if (releaseDate !== undefined) {
+    release.setDate(releaseDate)
+  }
+
+  const link = section.heading.find((s): s is { type: 'link'; text: string; href?: string } => s.type === 'link')
+  if (link !== undefined) {
+    if (link.href) {
+      const href = link.href
+      release.setLink(href)
+    } else {
+      const ref = markdown.find((ref): ref is MarkdownReference => ref.type === 'reference' && ref.text === link.text)
+      if (ref) {
+        release.setLink(ref.href)
       }
     }
   }
 
-  changelog.setLinkPrefix(prefix)
+  for (const subsection of section.subsections) {
+    const category = contentToString(subsection.heading)
+    const items = subsection.article
+      .filter((s): s is MarkdownListItem => s.type === 'listItem')
+      .map((s) => contentToString(s.content))
+
+    for (const item of items) {
+      release.addItem(category, item.trimEnd())
+    }
+  }
+
+  return release
 }
 
 export function parseChangelog(changelogStr: string): Changelog {
-  const lines = changelogStr.split(/\r\n|[\r\n]/g)
   const changelog = new Changelog()
-  const refMap = new Map<string, string>()
-  let release: Release | null = null
-  let category: string | null = null
-  let description = ''
+  const markdown = parseMarkdown(changelogStr)
 
-  const addRelease = () => {
-    if (release) {
+  const parser = new Parser(markdown)
+  const document = parser.parseDocument()
+
+  if (document) {
+    changelog.setHeading(contentToString(document.heading).trimEnd())
+    changelog.setDescription(itemsToString(document.article).trimEnd())
+
+    for (const section of document.sections) {
+      const release = parseRelease(markdown, section)
       changelog.addRelease(release)
-      release = null
     }
   }
-
-  let match: RegExpMatchArray | null
-  let i = 1
-  for (const line of lines) {
-    if ((match = line.match(/^#\s+(.*)\s*$/))) {
-      changelog.setHeading(match[1])
-    } else if ((match = line.match(/^\[([^\]]+)]:\s+(.*)$/))) {
-      refMap.set(match[1], match[2])
-    } else if ((match = line.match(/^##\s+\[?([^\]]+?)]?(?:\s+-\s*(.*))?$/))) {
-      addRelease()
-      const [, name, date = null] = match
-      release = new Release(name)
-      release.setDate(date)
-    } else if ((match = line.match(/^###\s+(.+)$/))) {
-      category = match[1].toLowerCase()
-
-      if (!release) throw new TypeError(`Missing release for category "${category}" in line ${i}`)
-
-      if (typeof release[category] !== 'function')
-        throw new TypeError(`Unsupported category type "${category}" in line ${i}`)
-    } else if ((match = line.match(/^[-*]\s+(.*)$/))) {
-      if (!release || !category) throw new TypeError(`Missing release or category in line ${i}`)
-
-      release[category](match[1])
-    } else if (!release) {
-      description += `${line}\n`
-    }
-
-    i += 1
-  }
-
-  addRelease()
-
-  for (const release of changelog.getReleases()) {
-    const link = refMap.get(release.getName())
-    if (link) {
-      release.setLink(link)
-    }
-  }
-
-  changelog.setDescription(description.trimEnd())
-  detectConfig(changelog, refMap)
 
   return changelog
 }

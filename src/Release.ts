@@ -7,6 +7,7 @@ export class Release {
   [key: string]: any
 
   private _name: string
+  private _description: string = ''
   private _link: string | null = null
   private _date: string | null = null
   private readonly _items = new Map<string, string[]>()
@@ -21,6 +22,15 @@ export class Release {
 
   setName(value: string): this {
     this._name = value
+    return this
+  }
+
+  getDescription(): string {
+    return this._description
+  }
+
+  setDescription(value: string): this {
+    this._description = value
     return this
   }
 

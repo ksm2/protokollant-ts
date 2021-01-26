@@ -40,9 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
     const changelog = parseChangelog(`\
 # Changelog
-All notable changes to this project will be documented in this file.
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+${description}
 
 ## [Unreleased] - 2021-01-24
 ### Changed
@@ -53,10 +51,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Unreleased]: https://github.com/ksm2/protokollant/compare/v1.0.2...master
 `)
     expect(changelog.getHeading()).toBe('Changelog')
-    expect(changelog.getDescription()).toBe(`\
-All notable changes to this project will be documented in this file.
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).`)
+    expect(changelog.getDescription()).toBe(description)
 
     const releases = changelog.getReleases()
     expect(releases).toHaveLength(1)
@@ -73,5 +68,32 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
     const [item0, item1] = items
     expect(item0).toBe('Upgrade dependencies')
     expect(item1).toBe('Change project configuration')
+  })
+
+  it('parses a changelog with a described release', () => {
+    const description = `\
+This is the **initial** release!
+Hope you like it!`
+
+    const changelog = parseChangelog(`\
+# Changelog
+## [Unreleased] - 2021-01-24
+${description}
+
+### Added
+- Feature 1
+- Feature 2
+
+
+[Unreleased]: https://github.com/ksm2/protokollant/compare/v1.0.2...master
+`)
+    expect(changelog.getHeading()).toBe('Changelog')
+    expect(changelog.getDescription()).toBe('')
+
+    const releases = changelog.getReleases()
+    expect(releases).toHaveLength(1)
+    const release = releases[0]
+    expect(release.getName()).toBe('Unreleased')
+    expect(release.getDescription()).toBe(description)
   })
 })
