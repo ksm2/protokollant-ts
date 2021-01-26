@@ -1,6 +1,6 @@
 {
   "name": "protokollant",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "TypeScript library and CLI to manage CHANGELOG.md files",
   "repository": "git@github.com:ksm2/protokollant.git",
   "author": "Konstantin Möllers <ksm.moellers@gmail.com>",
@@ -37,8 +37,13 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "collectCoverageFrom": ["./src/**/*.ts"],
-    "coveragePathIgnorePatterns": ["./src/cli.ts", "./src/index.ts"],
+    "collectCoverageFrom": [
+      "./src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "./src/cli.ts",
+      "./src/index.ts"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 85,
